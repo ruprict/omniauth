@@ -43,16 +43,20 @@ module OmniAuth
       def perform
       	begin
       		@adaptor.bind(:bind_dn => request.POST['username'], :password => request.POST['password'])
-      		@ldap_user_info = @adaptor.search(:filter => Net::LDAP::Filter.eq(@adaptor.uid, request.POST['username']),:limit => 1)
+      		@ldap_user_info = @adaptor.search(:filter => Net::LDAP::Filter.eq(@adaptor.uid, extract_name_from_email),:limit => 1)
       		@user_info = self.class.map_user(@@config, @ldap_user_info)
 	        @env['REQUEST_METHOD'] = 'GET'
 	        @env['PATH_INFO'] = "#{OmniAuth.config.path_prefix}/#{name}/callback"
-	
+	        @env["omniauth.auth"] = @user_info
 	        call_app!
       	rescue Exception => e
       		fail!(:invalid_credentials, e)
       	end
-      end      
+      end  
+      
+      def extract_name_from_email
+        /^([a-z\d._%-]+)@((?:[a-z\d-]+\.)+)([a-z]{2,6})$/i.match(request.POST['username'])[1]
+      end    
 
       def callback_phase
       	fail!(:invalid_request)
