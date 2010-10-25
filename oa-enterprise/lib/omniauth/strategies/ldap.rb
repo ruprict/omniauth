@@ -47,7 +47,7 @@ module OmniAuth
       		@user_info = self.class.map_user(@@config, @ldap_user_info)
 	        @env['REQUEST_METHOD'] = 'GET'
 	        @env['PATH_INFO'] = "#{OmniAuth.config.path_prefix}/#{name}/callback"
-	        @env["omniauth.auth"] = @user_info
+	        @env["omniauth.auth"] = auth_hash
 	        call_app!
       	rescue Exception => e
       		fail!(:invalid_credentials, e)
