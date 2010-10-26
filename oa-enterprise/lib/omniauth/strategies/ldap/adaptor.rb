@@ -3,6 +3,8 @@ require 'rack'
 require 'net/ldap'
 require 'net/ntlm'
 require 'uri'
+require 'kconv'
+
 module OmniAuth
   module Strategies
     class LDAP
